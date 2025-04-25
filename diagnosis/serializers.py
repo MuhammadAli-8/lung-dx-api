@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import UploadedImage, Diagnosis, AdminStats
+from .models import UploadedImage, Diagnosis, AdminStats, User
+from django.contrib.auth import authenticate
 
 
 class DiagnosisSerializer(serializers.ModelSerializer):
@@ -36,3 +37,31 @@ class AdminStatsSerializer(serializers.ModelSerializer):
         model = AdminStats
         fields = ["date", "total_checks", "most_common_disease", "most_common_disease_count"]
         read_only_fields = ["date", "total_checks", "most_common_disease", "most_common_disease_count"]
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Serializer for user registration."""
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password"]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+        )
+        return user
+
+class UserLoginSerializer(serializers.Serializer):
+    """Serializer for user login."""
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(username=data["username"], password=data["password"])
+        if user is None:
+            raise serializers.ValidationError("Invalid username or password.")
+        data["user"] = user
+        return data
