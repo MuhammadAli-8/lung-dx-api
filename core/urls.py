@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import APIRootView
+
 """
 URL configuration for lung_diagnosis project.
 
@@ -22,7 +24,10 @@ Including another URLconf
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/", include("diagnosis.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api/', APIRootView.as_view(), name='api_root'),
+    path('api/', include('user.urls')),
+    path('api/', include('images.urls')),
+    path('api/', include('diagnoses.urls')),
+    path('api/', include('stats.urls')),] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]

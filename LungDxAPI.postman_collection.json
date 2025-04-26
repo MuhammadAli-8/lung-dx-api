@@ -1,654 +1,750 @@
 {
-    "info": {
-        "_postman_id": "32ce7cd0-9d77-494a-a22c-b9c9dbbd84c9",
-        "name": "LungDxAPI",
-        "description": "# LungDxAPI Testing\n\nThis collection tests the LungDxAPI endpoints for user registration, login, logout, image upload, diagnosis history, single diagnosis, admin stats, user profile, password reset, image deletion, and API root.\n\n## Usage\n1. Install [Postman](https://www.postman.com/downloads/).\n2. Import this collection.\n3. Set up an environment with `baseUrl: http://127.0.0.1:8000`.\n4. Run the Django server (`python manage.py runserver`).\n5. Execute requests in order: Register, Login, Upload Image, etc.\n\n### Resources\n[Postman Docs](https://learning.postman.com/docs/)",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-        "_exporter_id": "40588206"
-    },
-    "item": [
-        {
-            "name": "Get API Root",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains endpoint data\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('register').that.is.an('object');",
-                            "    pm.expect(json.register).to.have.property('url').that.includes('/api/register/');",
-                            "    pm.expect(json.register).to.have.property('description').that.is.a('string');",
-                            "    pm.expect(json).to.have.property('login');",
-                            "    pm.expect(json).to.have.property('logout');",
-                            "    pm.expect(json).to.have.property('upload_image');",
-                            "    pm.expect(json).to.have.property('diagnosis_history');",
-                            "    pm.expect(json).to.have.property('image_delete');",
-                            "    pm.expect(json).to.have.property('single_diagnosis');",
-                            "    pm.expect(json).to.have.property('admin_stats');",
-                            "    pm.expect(json).to.have.property('profile');",
-                            "    pm.expect(json).to.have.property('password_reset_request');",
-                            "    pm.expect(json).to.have.property('password_reset_confirm');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{baseUrl}}/api/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Register",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 201\", function () {",
-                            "    pm.response.to.have.status(201);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains username and email\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('username', 'testuser');",
-                            "    pm.expect(json).to.have.property('email', 'test@example.com');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"username\": \"testuser\", \"email\": \"test@example.com\", \"password\": \"password123\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/register/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "register", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Login",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains token and username\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('token').that.is.a('string');",
-                            "    pm.expect(json).to.have.property('username', 'testuser');",
-                            "    pm.collectionVariables.set('token', json.token);",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"username\": \"testuser\", \"password\": \"password123\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/login/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "login", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Logout",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains success message\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('message', 'Successfully logged out.');",
-                            "});",
-                            "pm.collectionVariables.set('token', '');"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/logout/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "logout", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Upload Image",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 201\", function () {",
-                            "    pm.response.to.have.status(201);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains message and id\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('message', 'Image uploaded successfully');",
-                            "    pm.expect(json).to.have.property('id').that.is.a('number');",
-                            "    pm.collectionVariables.set('image_id', json.id);",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "formdata",
-                    "formdata": [
-                        {
-                            "key": "image",
-                            "type": "file",
-                            "src": ""
-                        }
-                    ]
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/images/upload/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "images", "upload", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Diagnosis History",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response is an array\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.be.an('array');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/images/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "images", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Single Diagnosis",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains diagnosis data\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('id').that.is.a('number');",
-                            "    pm.expect(json).to.have.property('disease_type').that.is.a('string');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/diagnoses/1",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "diagnoses", "1"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Admin Stats",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains stats data\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('total_checks').that.is.a('number');",
-                            "    pm.expect(json).to.have.property('most_common_disease').that.is.a('string');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{admin_token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/stats/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "stats", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Admin Login",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains token and username\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('token').that.is.a('string');",
-                            "    pm.expect(json).to.have.property('username').that.is.a('string');",
-                            "    pm.collectionVariables.set('admin_token', json.token);",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"username\": \"admin\", \"password\": \"admin123\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/login/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "login", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Get Profile",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains profile data\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('username').that.is.a('string');",
-                            "    pm.expect(json).to.have.property('email').that.is.a('string');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/profile/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "profile", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Update Profile",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains updated email\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('email', 'new@example.com');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "PATCH",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    },
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"email\": \"new@example.com\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/profile/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "profile", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Password Reset Request",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains success message\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('message', 'Password reset email sent.');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"email\": \"test@example.com\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/password-reset/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "password-reset", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Password Reset Confirm",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Response is JSON\", function () {",
-                            "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                            "});",
-                            "pm.test(\"Response contains success message\", function () {",
-                            "    const json = pm.response.json();",
-                            "    pm.expect(json).to.have.property('message', 'Password reset successful.');",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"uid\": \"\", \"token\": \"\", \"new_password\": \"newpass123\"}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{baseUrl}}/api/password-reset/confirm/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "password-reset", "confirm", ""]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Image Delete",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status code is 204\", function () {",
-                            "    pm.response.to.have.status(204);",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "DELETE",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Token {{token}}",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{baseUrl}}/api/images/{{image_id}}/",
-                    "host": ["{{baseUrl}}"],
-                    "path": ["api", "images", "{{image_id}}", ""]
-                }
-            },
-            "response": []
-        }
-    ],
-    "variable": [
-        {
-            "key": "baseUrl",
-            "value": "http://127.0.0.1:8000"
-        },
-        {
-            "key": "token",
-            "value": ""
-        },
-        {
-            "key": "admin_token",
-            "value": ""
-        },
-        {
-            "key": "image_id",
-            "value": ""
-        }
-    ]
+	"info": {
+		"_postman_id": "b045248b-e14f-4ad6-be07-5ff822920028",
+		"name": "LungDxAPI",
+		"description": "# LungDxAPI Testing\n\nThis collection tests the LungDxAPI endpoints for user registration, login, logout, image upload, diagnosis history, single diagnosis, admin stats, user profile, password reset, image deletion, and API root.\n\n## Usage\n1. Install [Postman](https://www.postman.com/downloads/).\n2. Import this collection.\n3. Set up an environment with `baseUrl: http://127.0.0.1:8000`.\n4. Run the Django server (`python manage.py runserver`).\n5. Execute requests in order: Register, Login, Upload Image, etc.\n\n### Resources\n[Postman Docs](https://learning.postman.com/docs/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40588206",
+		"_collection_link": "https://www.postman.com/lively-capsule-321519/workspace/lungdxapi/collection/40588206-b045248b-e14f-4ad6-be07-5ff822920028?action=share&source=collection_link&creator=40588206"
+	},
+	"item": [
+		{
+			"name": "Get API Root",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains endpoint data\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('register').that.is.an('object');",
+							"    pm.expect(json.register).to.have.property('url').that.includes('/api/register/');",
+							"    pm.expect(json.register).to.have.property('description').that.is.a('string');",
+							"    pm.expect(json).to.have.property('login');",
+							"    pm.expect(json).to.have.property('logout');",
+							"    pm.expect(json).to.have.property('upload_image');",
+							"    pm.expect(json).to.have.property('diagnosis_history');",
+							"    pm.expect(json).to.have.property('delete_image');",
+							"    pm.expect(json).to.have.property('single_diagnosis');",
+							"    pm.expect(json).to.have.property('admin_stats');",
+							"    pm.expect(json).to.have.property('profile');",
+							"    pm.expect(json).to.have.property('password_reset_request');",
+							"    pm.expect(json).to.have.property('password_reset_confirm');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains username and email\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('username').that.is.a('string');",
+							"    pm.expect(json).to.have.property('email').that.is.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"jimmy\", \"email\": \"test@example.com\", \"password\": \"jimmy123\", \"first_name\": \"Jimmy\", \"last_name\": \"Butler\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/register/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains token and username\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('token').that.is.a('string');",
+							"    pm.expect(json).to.have.property('username').that.is.a('string');",
+							"    pm.collectionVariables.set('token', json.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"jimmy\", \"password\": \"jimmy123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/login/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('message', 'Successfully logged out.');",
+							"});",
+							"pm.collectionVariables.set('token', '');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/logout/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"logout",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains profile data\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('username').that.is.a('string');",
+							"    pm.expect(json).to.have.property('email').that.is.a('string');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/profile/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains updated email\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('email', 'new@example.com');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"new@example.com\", \"first_name\": \"Jimmy\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/profile/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains message and id\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('image').that.is.a('string');",
+							"    pm.expect(json).to.have.property('id').that.is.a('number');",
+							"    pm.collectionVariables.set('image_id', json.id);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/moham/Desktop/IMG_1741.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/images/upload/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"images",
+						"upload",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/images/{{image_id}}/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"images",
+						"{{image_id}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Diagnosis History",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response is an array\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/images/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"images",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Single Diagnosis",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains diagnosis data\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('image').that.is.a('number');",
+							"    pm.expect(json).to.have.property('disease_type').that.is.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/diagnoses/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"diagnoses",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains token and username\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('token').that.is.a('string');",
+							"    pm.expect(json).to.have.property('username').that.is.a('string');",
+							"    pm.collectionVariables.set('admin_token', json.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"bruno\", \"password\": \"123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/login/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Stats",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains stats data\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json[0]).to.have.property('total_checks').that.is.a('number');",
+							"    pm.expect(json[0]).to.have.property('most_common_disease').that.is.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/stats/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"stats",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password Reset Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('message', 'Password reset email sent.');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"new@example.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/password-reset/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"password-reset",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password Reset Confirm",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property('message', 'Password reset successful.');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"uid\": \"\", \"token\": \"\", \"new_password\": \"newpass123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/password-reset/confirm/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"password-reset",
+						"confirm",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		},
+		{
+			"key": "image_id",
+			"value": ""
+		}
+	]
 }
