@@ -2,26 +2,64 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import UploadedImage
+from diagnoses.models import Diagnosis
 from rest_framework.exceptions import NotFound
 from .serializers import UploadedImageSerializer
+import os
+import numpy as np
+import json
+from django.conf import settings
+from .preprocessing import preprocess_image
+from .model_loader import load_model
+from .gradcam import make_gradcam_heatmap, overlay_heatmap
+import cv2
+import base64
 
+# Load model and labels
+try:
+    model = load_model(settings.BASE_DIR / 'images/lung_disease_model_final.h5')
+    with open(settings.BASE_DIR / 'images/labels.json', 'r') as f:
+        labels = json.load(f)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    model = None
+    labels = {}
 
-
-# Create your views here.
 class UploadImageView(generics.CreateAPIView):
     """Upload an image for diagnosis."""
     serializer_class = UploadedImageSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        if not model:
+            return Response({"error": "Model not loaded"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         serializer.save(user=self.request.user)
-        # Trigger Celery task for ML processing (to be implemented)
-        # from .tasks import process_image
-        # process_image.delay(serializer.instance.id)
-        return Response(
-            {"message": "Image uploaded successfully", "id": serializer.instance.id},
-            status=status.HTTP_201_CREATED,
+        image_instance = serializer.instance
+        image_path = image_instance.image.path
+
+        # Preprocess image
+        processed_image = preprocess_image(image_path)
+
+        # Predict with single input
+        prediction = model.predict(processed_image)
+        pred_index = int(np.argmax(prediction))
+        if not labels or str(pred_index) not in labels:
+            return Response({"error": "Invalid prediction index or empty labels"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        predicted_label = labels[str(pred_index)]
+
+        # Create Diagnosis instance with the predicted disease_type
+        Diagnosis.objects.create(
+            image=image_instance,
+            disease_type=predicted_label
         )
+        
+
+        return Response({
+            "message": "Image uploaded and processed successfully",
+            "id": image_instance.id,
+            "prediction": predicted_label,
+        }, status=status.HTTP_201_CREATED)
 
 class ImageDeleteView(generics.DestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]

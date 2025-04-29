@@ -9,12 +9,11 @@ class Diagnosis(models.Model):
     disease_type = models.CharField(
         max_length=50,
         choices=[
-            ("pneumonia", "Pneumonia"),
-            ("lung_opacity", "Lung opacity"),
-            ("pneumothorax", "Pneumothorax"),
-            ("pleural_effusion", "Pleural effusion"),
-            ("unknown", "Unknown"),
-            ("normal", "Normal"),
+            ("No Finding", "No Finding"),
+            ("Pneumonia", "Pneumonia"),
+            ("Pneumothorax", "Pneumothorax"),
+            ("Effusion", "Effusion"),
+            ("Cardiomegaly", "Cardiomegaly"),
         ],
         help_text="Diagnosis result from ML model"
     )
