@@ -12,11 +12,13 @@ class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [AllowAny]
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         user = serializer.save()
         Token.objects.create(user=user)
         return Response(
-            {"message": "User registered successfully", "username": user.username},
+            {"message": "User registered successfully", "email": user.email},
             status=status.HTTP_201_CREATED,
         )
 
@@ -32,7 +34,7 @@ class UserLoginView(generics.GenericAPIView):
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
         return Response(
-            {"token": token.key, "username": user.username},
+            {"token": token.key, "email": user.email},
             status=status.HTTP_200_OK,
         )
 

@@ -11,7 +11,6 @@ import json
 from django.conf import settings
 from .preprocessing import preprocess_image
 from .model_loader import load_model
-from .gradcam import make_gradcam_heatmap, overlay_heatmap
 import cv2
 import base64
 

@@ -156,3 +156,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@lungdxapi.com'
 FRONTEND_URL = 'http://127.0.0.1:3000'
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']

@@ -10,42 +10,42 @@ from django.utils.http import urlsafe_base64_decode
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration."""
     password = serializers.CharField(write_only=True, min_length=8)
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "first_name", "last_name"]
+        fields = ["email", "password", "first_name", "last_name", "phone_number", "age", "gender"]
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data.get("email", ""),
+            email=validated_data["email"],
             password=validated_data["password"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
+            phone_number=validated_data.get("phone_number", ""),
+            age=validated_data.get("age", None),
+            gender=validated_data.get("gender", None),
         )
         return user
 
+
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login."""
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(username=data["username"], password=data["password"])
+        user = authenticate(email=data["email"], password=data["password"])
         if user is None:
-            raise serializers.ValidationError("Invalid username or password.")
+            raise serializers.ValidationError("Invalid email or password.")
         data["user"] = user
         return data
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name']
-        read_only_fields = ['username']
+        fields = ['age', 'phone_number', 'gender', 'email', 'first_name', 'last_name']
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
