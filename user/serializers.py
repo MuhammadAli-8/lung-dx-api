@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
@@ -7,7 +7,30 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
+from .models import User
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    email = serializers.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password'] = serializers.CharField()
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        user = authenticate(email=email, password=password)
+        if user is None:
+            raise serializers.ValidationError("Invalid email or password.")
+
+        refresh = self.get_token(user)
+        data = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'email': user.email  # Include email in the response
+        }
+        return data
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
@@ -27,20 +50,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             gender=validated_data.get("gender", None),
         )
         return user
-
-
-class UserLoginSerializer(serializers.Serializer):
-    """Serializer for user login."""
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-
-    def validate(self, data):
-        user = authenticate(email=data["email"], password=data["password"])
-        if user is None:
-            raise serializers.ValidationError("Invalid email or password.")
-        data["user"] = user
-        return data
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
