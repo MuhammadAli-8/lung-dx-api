@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     "rest_framework.authtoken",
+    'rest_framework_simplejwt',
     'core',
     'user',
     'images',
@@ -139,6 +141,7 @@ AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
@@ -158,3 +161,10 @@ DEFAULT_FROM_EMAIL = 'noreply@lungdxapi.com'
 FRONTEND_URL = 'http://127.0.0.1:3000'
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
+    "AUTH_HEADER_TYPES": ("Bearer", "JWT", "Token"),
+    "ROTATE_REFRESH_TOKENS": True,
+}

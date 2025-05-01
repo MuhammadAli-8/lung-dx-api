@@ -3,6 +3,10 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import APIRootView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 """
 URL configuration for lung_diagnosis project.
@@ -28,6 +32,10 @@ urlpatterns = [
     path('api/', include('user.urls')),
     path('api/', include('images.urls')),
     path('api/', include('diagnoses.urls')),
-    path('api/', include('stats.urls')),] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api/', include('stats.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
