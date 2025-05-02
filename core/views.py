@@ -39,7 +39,7 @@ class APIRootView(APIView):
                 "description": "Upload an image for diagnosis (POST, authenticated)"
             },
             "upload_multiple_images": {
-                "url": f"{base_url}{reverse('images:upload-multiple-images')}",
+                "url": f"{base_url}{reverse('images:batch-upload-images')}",
                 "description": "Upload multiple images for diagnosis (POST, authenticated)"
             },
             "delete_image": {

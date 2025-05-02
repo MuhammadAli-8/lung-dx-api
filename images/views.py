@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import UploadedImage
 from rest_framework.exceptions import NotFound
-from .serializers import UploadedImageSerializer
+from .serializers import UploadedImageSerializer, BatchImageUploadSerializer, BatchUploadResultSerializer
 import os
 import numpy as np
 import json
@@ -13,6 +13,7 @@ from .preprocessing import preprocess_image
 from .model_loader import load_model
 import cv2
 import base64
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
 # Load model and labels
@@ -87,6 +88,79 @@ class DiagnosisHistoryView(generics.ListAPIView):
     def get_queryset(self):
         return UploadedImage.objects.filter(user=self.request.user)
 
-class MultipleImageUploadView(APIView):
-    """Upload multiple images for diagnosis."""
-    pass
+class BatchUploadImagesView(generics.GenericAPIView):
+    """Upload multiple images at once for diagnosis."""
+    serializer_class = BatchImageUploadSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def post(self, request, *args, **kwargs):
+        if not model:
+            return Response({"error": "Model not loaded"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Validate input data
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Get all files from validated data
+        image_files = serializer.validated_data['images']
+        
+        results = []
+        
+        for image_file in image_files:
+            # Create temporary instance
+            image_instance = UploadedImage(user=request.user, image=image_file)
+            image_instance.save()
+            
+            try:
+                # Preprocess image
+                processed_image = preprocess_image(image_instance.image.path)
+                
+                # Predict with model
+                prediction = model.predict(processed_image)
+                pred_index = int(np.argmax(prediction))
+                
+                if not labels or str(pred_index) not in labels:
+                    # Delete unsuccessful instance
+                    image_instance.delete()
+                    continue
+                
+                predicted_label = labels[str(pred_index)]
+                
+                # Save prediction to the database
+                image_instance.disease_type = predicted_label
+                image_instance.save()
+                
+                # Add to results
+                results.append({
+                    "id": image_instance.id,
+                    "filename": os.path.basename(image_instance.image.name),
+                    "prediction": predicted_label,
+                })
+            
+            except Exception as e:
+                # Delete unsuccessful instance and continue with other images
+                image_instance.delete()
+                results.append({
+                    "filename": os.path.basename(image_file.name),
+                    "error": str(e)
+                })
+        
+        if not results:
+            return Response({"error": "Failed to process any images"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Create response using the result serializer
+        response_data = {
+            "message": f"Processed {len(results)} images",
+            "successful": len([r for r in results if "error" not in r]),
+            "failed": len([r for r in results if "error" in r]),
+            "results": results
+        }
+        
+        result_serializer = BatchUploadResultSerializer(data=response_data)
+        if result_serializer.is_valid():
+            return Response(result_serializer.validated_data, status=status.HTTP_201_CREATED)
+        else:
+            # Fallback to raw response if serializer fails
+            return Response(response_data, status=status.HTTP_201_CREATED)
