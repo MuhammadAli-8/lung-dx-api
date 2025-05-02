@@ -38,16 +38,20 @@ class APIRootView(APIView):
                 "url": f"{base_url}{reverse('images:upload_image')}",
                 "description": "Upload an image for diagnosis (POST, authenticated)"
             },
+            "upload_multiple_images": {
+                "url": f"{base_url}{reverse('images:upload-multiple-images')}",
+                "description": "Upload multiple images for diagnosis (POST, authenticated)"
+            },
             "delete_image": {
                 "url": f"{base_url}{reverse('images:delete_image', args=[1])}",
                 "description": "Delete an uploaded image by ID (DELETE, authenticated)"
             },
             "diagnosis_history": {
-                "url": f"{base_url}{reverse('diagnoses:diagnosis_history')}",
+                "url": f"{base_url}{reverse('images:diagnosis_history')}",
                 "description": "View user's diagnosis history (GET, authenticated)"
             },
             "single_diagnosis": {
-                "url": f"{base_url}{reverse('diagnoses:single_diagnosis', args=[1])}",
+                "url": f"{base_url}{reverse('images:single_diagnosis', args=[1])}",
                 "description": "View a single diagnosis by ID (GET, authenticated)"
             },
             "admin_stats": {

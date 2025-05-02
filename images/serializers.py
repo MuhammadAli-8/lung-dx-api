@@ -1,12 +1,9 @@
 from rest_framework import serializers
 from .models import UploadedImage
-from diagnoses.serializers import DiagnosisSerializer
-
 
 class UploadedImageSerializer(serializers.ModelSerializer):
     """Serializer for UploadedImage model, including associated diagnosis."""
-    diagnosis = DiagnosisSerializer(read_only=True)
-
+    
     def validate_image(self, value):
         max_size = 5 * 1024 * 1024  # 5MB
         if value.size > max_size:
@@ -19,5 +16,5 @@ class UploadedImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UploadedImage
-        fields = ["id", "user", "image", "uploaded_at", "created_at", "diagnosis"]
-        read_only_fields = ["user", "uploaded_at", "created_at", "diagnosis"]
+        fields = ["id", "user", "image", "uploaded_at", "created_at", "disease_type"]
+        read_only_fields = ["user", "uploaded_at", "created_at", "disease_type"]

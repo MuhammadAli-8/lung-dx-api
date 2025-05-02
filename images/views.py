@@ -1,8 +1,8 @@
 from rest_framework import generics, status, permissions
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import UploadedImage
-from diagnoses.models import Diagnosis
 from rest_framework.exceptions import NotFound
 from .serializers import UploadedImageSerializer
 import os
@@ -13,6 +13,7 @@ from .preprocessing import preprocess_image
 from .model_loader import load_model
 import cv2
 import base64
+
 
 # Load model and labels
 try:
@@ -47,12 +48,9 @@ class UploadImageView(generics.CreateAPIView):
             return Response({"error": "Invalid prediction index or empty labels"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         predicted_label = labels[str(pred_index)]
 
-        # Create Diagnosis instance with the predicted disease_type
-        Diagnosis.objects.create(
-            image=image_instance,
-            disease_type=predicted_label
-        )
-        
+        # Save prediction to the database
+        image_instance.disease_type = predicted_label
+        image_instance.save()
 
         return Response({
             "message": "Image uploaded and processed successfully",
@@ -72,3 +70,23 @@ class ImageDeleteView(generics.DestroyAPIView):
         if obj.user != self.request.user:
             raise NotFound("Image not found or not owned by user.")
         return obj
+
+class SingleDiagnosisView(generics.RetrieveAPIView):
+    """View a single diagnosis."""
+    serializer_class = UploadedImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UploadedImage.objects.filter(user=self.request.user)
+
+class DiagnosisHistoryView(generics.ListAPIView):
+    """View user's diagnosis history."""
+    serializer_class = UploadedImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UploadedImage.objects.filter(user=self.request.user)
+
+class MultipleImageUploadView(APIView):
+    """Upload multiple images for diagnosis."""
+    pass

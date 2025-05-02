@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from diagnoses.models import Diagnosis
+from images.models import UploadedImage
 
 # Create your models here.
 class AdminStats(models.Model):
@@ -21,8 +21,8 @@ class AdminStats(models.Model):
     @classmethod
     def update_daily_stats(cls, date):
         """Update or create stats for a given date."""
-        checks = Diagnosis.get_daily_checks(date)
-        common_disease = Diagnosis.get_most_common_disease()
+        checks = UploadedImage.get_daily_checks(date)
+        common_disease = UploadedImage.get_most_common_disease()
         disease_name = common_disease["disease_type"] if common_disease else ""
         disease_count = common_disease["count"] if common_disease else 0
 

@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'core',
     'user',
     'images',
-    'diagnoses',
     'stats',
     'silk',
     'corsheaders',
