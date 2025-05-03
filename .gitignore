@@ -33,3 +33,6 @@ env/
 # Sensitive files
 db.sqlite3
 local_settings.py
+
+# api tests
+api.http

@@ -12,6 +12,7 @@ from django.conf import settings
 from .preprocessing import preprocess_image
 from .model_loader import load_model
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from .filters import UploadedImageFilter
 
 
 # Load model and labels
@@ -83,6 +84,7 @@ class DiagnosisHistoryView(generics.ListAPIView):
     """View user's diagnosis history."""
     serializer_class = UploadedImageSerializer
     permission_classes = [IsAuthenticated]
+    filterset_class = UploadedImageFilter
 
     def get_queryset(self):
         return UploadedImage.objects.filter(user=self.request.user)
