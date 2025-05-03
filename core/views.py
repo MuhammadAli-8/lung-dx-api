@@ -6,6 +6,7 @@ from django.urls import reverse
 
 class APIRootView(APIView):
     permission_classes = [permissions.AllowAny]
+    serializer_class = None
 
     def get(self, request, *args, **kwargs):
         base_url = f"{request.scheme}://{request.get_host()}"

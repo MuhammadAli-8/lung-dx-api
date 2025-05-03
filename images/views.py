@@ -11,8 +11,6 @@ import json
 from django.conf import settings
 from .preprocessing import preprocess_image
 from .model_loader import load_model
-import cv2
-import base64
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
@@ -60,6 +58,7 @@ class UploadImageView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class ImageDeleteView(generics.DestroyAPIView):
+    serializer_class = UploadedImageSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = UploadedImage.objects.all()
 

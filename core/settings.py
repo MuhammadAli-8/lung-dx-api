@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'stats',
     'silk',
     'corsheaders',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -141,12 +142,11 @@ AUTH_USER_MODEL = "user.User"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        "rest_framework.authentication.TokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
+        ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-    ],
+        ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
@@ -164,6 +164,13 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
-    "AUTH_HEADER_TYPES": ("Bearer", "JWT", "Token"),
+    "AUTH_HEADER_TYPES": ("Bearer"),
     "ROTATE_REFRESH_TOKENS": True,
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Lung Diagnosis API',
+    'DESCRIPTION': 'API for uploading and analyzing lung images with disease prediction',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': True,  
 }

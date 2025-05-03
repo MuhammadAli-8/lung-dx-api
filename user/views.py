@@ -30,6 +30,7 @@ class UserLoginView(TokenObtainPairView):
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = None
 
     def post(self, request, *args, **kwargs):
         try:
